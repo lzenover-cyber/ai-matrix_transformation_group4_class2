@@ -2,11 +2,6 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ImageFilter
-try:
-    from rembg import remove
-    REMBG_OK = True
-except:
-    REMBG_OK = False
 
 st.set_page_config(page_title="AI Matrix Transformation", layout="wide")
 
@@ -86,11 +81,11 @@ if page == L("Home", "Beranda"):
     st.subheader(L("Features", "Fitur") + " 🌟")
     st.write(L(
         "- **Geometric Transformations** 🔄: Translate, scale, rotate, shear, and reflect images.\n"
-        "- **Image Filters** 🎨: Apply blur, sharpen, or remove backgrounds.\n"
+        "- **Image Filters** 🎨: Apply blur or sharpen to images.\n"
         "- **Matrix Visualization** 📊: See how transformations affect points in a matrix.\n"
         "- **Multi-language Support** 🌍: Switch between English and Indonesian.",
         "- **Transformasi Geometri** 🔄: Translasi, skala, rotasi, geser, dan refleksi gambar.\n"
-        "- **Filter Gambar** 🎨: Terapkan blur, sharpen, atau hapus latar belakang.\n"
+        "- **Filter Gambar** 🎨: Terapkan blur atau sharpen pada gambar.\n"
         "- **Visualisasi Matriks** 📊: Lihat bagaimana transformasi memengaruhi titik dalam matriks.\n"
         "- **Dukungan Multi-bahasa** 🌍: Beralih antara Bahasa Inggris dan Indonesia."
     ))
@@ -137,9 +132,6 @@ elif page == L("AI Matrix Transformation", "Transformasi Matriks AI"):
         st.subheader(L("🎨 Image Filters", "🎨 Filter Gambar") + " 🖌️")
         filter_blur = st.checkbox(L("Blur Image", "Kaburkan Gambar") + " 🌫️")
         filter_sharpen = st.checkbox(L("Sharpen Image", "Pertajam Gambar") + " ⚡")
-        filter_remove_bg = st.checkbox(L("Remove Background", "Hapus Latar Belakang") + " 🗑️")
-        if not REMBG_OK and filter_remove_bg:
-            st.warning(L("Background removal is not available as rembg is not installed.", "Penghapusan latar belakang tidak tersedia karena rembg tidak terinstal."))
         st.divider()
         if st.button(L("🚀 Process Image", "🚀 Proses Gambar") + " ✨"):
             result = img.copy()
@@ -166,8 +158,6 @@ elif page == L("AI Matrix Transformation", "Transformasi Matriks AI"):
                 result = result.filter(ImageFilter.BLUR)
             if filter_sharpen:
                 result = result.filter(ImageFilter.SHARPEN)
-            if filter_remove_bg and REMBG_OK:
-                result = remove(result)
             st.subheader(L("📤 Output", "📤 Hasil") + " 🎯")
             colA, colB = st.columns(2)
             with colA:
@@ -232,6 +222,3 @@ elif page == L("Developer Team", "Tim Pengembang"):
             <p>{L(m[4], m[5])} 🚀</p>
         </div>
         """, unsafe_allow_html=True)
-
-
-
