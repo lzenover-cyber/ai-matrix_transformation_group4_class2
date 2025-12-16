@@ -2,7 +2,11 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ImageFilter
-from rembg import remove
+try:
+    from rembg import remove
+    REMBG_OK = True
+except:
+    REMBG_OK = False
 
 st.set_page_config(page_title="AI Matrix Transformation", layout="wide")
 
@@ -102,7 +106,7 @@ elif page == L("AI Matrix Transformation", "Transformasi Matriks AI"):
     st.divider()
     st.subheader(L("📤 Upload Image", "📤 Unggah Gambar") + " 🖼️")
     file = st.file_uploader(L("Upload image (JPG / PNG)", "Unggah gambar (JPG / PNG)"), ["jpg", "png", "jpeg"])
-    point = np.array([[1], [1]])
+    point = np.array([[1.0], [1.0]])  # Menggunakan float untuk presisi
     if file:
         img = Image.open(file).convert("RGBA")
         st.image(img, caption=L("Original Image", "Gambar Asli") + " 📸", width=300)
@@ -134,10 +138,13 @@ elif page == L("AI Matrix Transformation", "Transformasi Matriks AI"):
         filter_blur = st.checkbox(L("Blur Image", "Kaburkan Gambar") + " 🌫️")
         filter_sharpen = st.checkbox(L("Sharpen Image", "Pertajam Gambar") + " ⚡")
         filter_remove_bg = st.checkbox(L("Remove Background", "Hapus Latar Belakang") + " 🗑️")
+        if not REMBG_OK and filter_remove_bg:
+            st.warning(L("Background removal is not available as rembg is not installed.", "Penghapusan latar belakang tidak tersedia karena rembg tidak terinstal."))
         st.divider()
         if st.button(L("🚀 Process Image", "🚀 Proses Gambar") + " ✨"):
             result = img.copy()
             w, h = result.size
+            # Terapkan transformasi geometri pada gambar
             if use_scaling:
                 result = result.resize((int(w * sx), int(h * sy)))
             if use_rotation:
@@ -154,11 +161,12 @@ elif page == L("AI Matrix Transformation", "Transformasi Matriks AI"):
                     result = result.transpose(Image.FLIP_TOP_BOTTOM)
                 else:
                     result = result.transpose(Image.FLIP_LEFT_RIGHT)
+            # Terapkan filter
             if filter_blur:
                 result = result.filter(ImageFilter.BLUR)
             if filter_sharpen:
                 result = result.filter(ImageFilter.SHARPEN)
-            if filter_remove_bg:
+            if filter_remove_bg and REMBG_OK:
                 result = remove(result)
             st.subheader(L("📤 Output", "📤 Hasil") + " 🎯")
             colA, colB = st.columns(2)
@@ -169,6 +177,7 @@ elif page == L("AI Matrix Transformation", "Transformasi Matriks AI"):
             st.divider()
             st.subheader(L("📊 Matrix Visualization", "📊 Visualisasi Matriks") + " 🔍")
             transformed_point = point.copy()
+            # Terapkan transformasi pada titik (dalam urutan yang sama seperti gambar)
             if use_scaling:
                 S = np.array([[sx, 0], [0, sy]])
                 transformed_point = S @ transformed_point
@@ -180,15 +189,15 @@ elif page == L("AI Matrix Transformation", "Transformasi Matriks AI"):
                 Sh = np.array([[1, shx], [shy, 1]])
                 transformed_point = Sh @ transformed_point
             if use_translation:
-                transformed_point += np.array([[dx / 100], [dy / 100]])
+                transformed_point += np.array([[dx / 100.0], [dy / 100.0]])  # Normalisasi untuk visualisasi
             if use_reflection:
                 Ref = np.array([[1, 0], [0, -1]]) if axis == L("Horizontal", "Horizontal") else np.array([[-1, 0], [0, 1]])
                 transformed_point = Ref @ transformed_point
             fig, ax = plt.subplots()
             ax.scatter(point[0], point[1], s=100, label=L("Original Point", "Titik Awal") + " 🔵")
             ax.scatter(transformed_point[0], transformed_point[1], s=100, label=L("Transformed Point", "Titik Transformasi") + " 🔴")
-            ax.axhline(0)
-            ax.axvline(0)
+            ax.axhline(0, color='black', linewidth=0.5)
+            ax.axvline(0, color='black', linewidth=0.5)
             ax.grid(True)
             ax.legend()
             st.pyplot(fig)
