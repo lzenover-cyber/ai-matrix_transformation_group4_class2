@@ -1,5 +1,6 @@
-streamlit
-numpy
-matplotlib
-pillow
+streamlit==1.32.2
+numpy==1.26.4
+matplotlib==3.8.2
+pillow==10.2.0
+
 
