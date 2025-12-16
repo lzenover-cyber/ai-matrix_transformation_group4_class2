@@ -1,6 +1,0 @@
-streamlit
-numpy
-matplotlib
-pillow
-opencv-python-headless
-rembg
