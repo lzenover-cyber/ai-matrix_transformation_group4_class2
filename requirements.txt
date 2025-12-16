@@ -1,0 +1,9 @@
+streamlit
+numpy
+matplotlib==3.8.4
+pillow
+opencv-python-headless
+
+
+
+
