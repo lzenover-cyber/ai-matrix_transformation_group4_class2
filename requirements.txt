@@ -1,0 +1,7 @@
+streamlit
+numpy
+matplotlib
+pillow
+opencv-python-headless
+rembg==2.0.50
+onnxruntime
